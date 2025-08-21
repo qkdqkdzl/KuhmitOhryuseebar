@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -8,52 +6,59 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed = 5f;
 
     [Header("점프")]
-    public float jumpForce = 10f;
+    public float jump = 10f;
 
-    [Header("바닥")]
-    public Transform ground;   // 발밑 위치
+    [Header("바닥 체크")]
+    public Transform ground;
     public float groundCheckRadius = 0.1f;
     public LayerMask layerMask;
 
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
-    private bool isGrounded;
-
+    Rigidbody2D rb;
+    SpriteRenderer sr;
+    bool isGrounded;
+    int jumpsUsed = 0;                // 이번 착지 전까지 사용한 점프 횟수
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        sr = GetComponent<SpriteRenderer>();
+        
     }
 
     void Update()
     {
-        // 바닥 체크
+        // 바닥체크
         isGrounded = Physics2D.OverlapCircle(ground.position, groundCheckRadius, layerMask);
+        if (isGrounded) jumpsUsed = 0;
 
-        // 키 입력 (A, D)
+        // 움직이는 키 값
         float h = 0f;
-        if (Input.GetKey(KeyCode.A)) h = -1f;
-        else if (Input.GetKey(KeyCode.D)) h = 1f;
-
-        // 이동
-        rb.velocity = new Vector2(h * moveSpeed, rb.velocity.y);
-
-        // 좌우 반전
-        if (h > 0) spriteRenderer.flipX = false;
-        else if (h < 0) spriteRenderer.flipX = true;
-
-        // 점프 (스페이스바)
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.RightArrow))
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            h = 1f;
+        }
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            h = -1f;
+        }
+        
+
+        //if (Input.GetKey(KeyCode.RightArrow))
+        //    h = 1f;
+        //else if (Input.GetKey(KeyCode.LeftArrow))
+        //    h = -1f;
+
+
+        rb.velocity = new Vector2(h * moveSpeed, rb.velocity.y);
+        if (h != 0) sr.flipX = h < 0;
+
+        
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, 0f); // Y속도 초기화 (중복 점프시 일관성 유지)
+            rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
         }
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (ground == null) return;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(ground.position, groundCheckRadius);
-    }
+    
 }
