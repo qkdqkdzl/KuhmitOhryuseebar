@@ -33,11 +33,11 @@ public class PlayerMove : MonoBehaviour
 
         // 움직이는 키 값
         float h = 0f;
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.D))
         {
             h = 1f;
         }
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.A))
         {
             h = -1f;
         }
