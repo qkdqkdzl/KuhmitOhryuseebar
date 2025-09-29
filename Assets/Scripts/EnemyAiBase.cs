@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class EnemyAiBase : MonoBehaviour
 {
-    [Header("----------플레이어 관련----------")]
-    public Transform player;            // 추적/공격할 대상(플레이어)
+    [Header("---------- 공격 대상 ----------")]
+    public Transform player;            
 
-    [Header("---------- 탐지 공격 범위 ----------")]
+    [Header("---------- 감지 범위 ----------")]
     public float detectRange = 10f;     // 적이 플레이어를 감지하는 거리
     public float attackRange = 2f;      // 공격이 가능한 거리
 
-    [Header("---------- 이동 속도 ----------")]
-    public float moveSpeed = 3f;        // 적 이동 속도
+    [Header("---------- 이속 ----------")]
+    public float moveSpeed = 3f;        
 
-    [Header("---------- 공격 설정 ----------")]
-    public float attackCooldown = 1f;   // 공격 간격
+    [Header("---------- 공격 속도 ----------")]
+    public float attackCooldown = 1f;   
     private float lastAttackTime;
 
 
@@ -28,6 +28,7 @@ public class EnemyAiBase : MonoBehaviour
         rb = GetComponent<Rigidbody2D>(); // 적 본체에 Rigidbody2D가 있어야 작동
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();  // Animator 가져오기
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
