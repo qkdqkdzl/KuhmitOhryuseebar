@@ -2,17 +2,20 @@ using UnityEngine;
 
 public class DetectChat : MonoBehaviour
 {
-    public GameObject[] panels; // Panel_NPC1 ~ Panel_NPC5
-    private int currentPanelIndex = 0;
+    [Header("이 Detect가 켰으면 하는 패널")]
+    public GameObject panelToShow;
 
-    private void OnTriggerEnter(Collider other)
+    private void Start()
+    {       
+        panelToShow.SetActive(false); // 시작할 땐 꺼둠
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Hero가 detect1~7에 닿았는지 확인
-        if (other.CompareTag("Player") && currentPanelIndex < panels.Length)
+        if (other.CompareTag("Player") && panelToShow != null)
         {
-            panels[currentPanelIndex].SetActive(true);
-            currentPanelIndex++;
+            panelToShow.SetActive(true);
+            Debug.Log("OnTriggerEnter2D");
         }
-
     }
 }

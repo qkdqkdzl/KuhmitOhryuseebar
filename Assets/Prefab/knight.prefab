@@ -191,7 +191,9 @@ GameObject:
   - component: {fileID: 3435900980846915239}
   - component: {fileID: 9064914768629177212}
   - component: {fileID: -1752897233307038146}
-  - component: {fileID: 2719911024095807558}
+  - component: {fileID: 8534828171226046824}
+  - component: {fileID: 4085880021688200864}
+  - component: {fileID: 3456214333449745320}
   m_Layer: 0
   m_Name: knight
   m_TagString: Player
@@ -255,7 +257,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 4723107735738678597, guid: fc46633b0eb321e46838bcb9ff2d4150, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -293,7 +295,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 6
 --- !u!95 &3435900980846915239
 Animator:
   serializedVersion: 5
@@ -357,7 +359,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8375244564770448405}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9316e17ad818a8a43bd94a7e538d4304, type: 3}
   m_Name: 
@@ -365,7 +367,7 @@ MonoBehaviour:
   maxHealth: 100
   healthBarImage: {fileID: 4097460529898401411}
   healthBarCanvas: {fileID: 89318841374305949}
---- !u!114 &2719911024095807558
+--- !u!114 &8534828171226046824
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,16 +376,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 8375244564770448405}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d33b65696014bc4f9c1beecd930daa2, type: 3}
+  m_Script: {fileID: 11500000, guid: 8043a3dd9c73e404780a5905f700b4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  detectRange: 10
-  attackRange: 2
-  moveSpeed: 3
-  useMeleeAttack: 1
-  useRangedAttack: 0
-  projectilePrefab: {fileID: 0}
-  firePoint: {fileID: 0}
-  projectileSpeed: 10
-  attackCooldown: 1
+  animator: {fileID: 3435900980846915239}
+--- !u!114 &4085880021688200864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375244564770448405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b788bd06935ec6e4e9280a238721411b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDuration: 0.5
+  jumpForce: 7
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheck: {fileID: 0}
+  groundCheckRadius: 0.2
+--- !u!114 &3456214333449745320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375244564770448405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c43f0a6c821dad04b8dc67c7f55f801d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  jump: 10
+  ground: {fileID: 0}
+  groundCheckRadius: 0.1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8

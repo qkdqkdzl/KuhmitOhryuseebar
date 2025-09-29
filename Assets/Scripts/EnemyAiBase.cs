@@ -3,54 +3,71 @@ using UnityEngine;
 public class EnemyAiBase : MonoBehaviour
 {
     [Header("---------- 공격 대상 ----------")]
-    public Transform player;            
+    public Transform player; // 플레이어의 Transform을 받아옴 (Inspector에서 연결 필요)
 
     [Header("---------- 감지 범위 ----------")]
-    public float detectRange = 10f;     // 적이 플레이어를 감지하는 거리
-    public float attackRange = 2f;      // 공격이 가능한 거리
+    public float detectRange = 10f; // 플레이어를 감지하는 거리
+    public float attackRange = 2f;  // 공격 가능한 거리 (현재는 사용되지 않음)
 
-    [Header("---------- 이속 ----------")]
-    public float moveSpeed = 3f;        
+    [Header("---------- 이동 속도 ----------")]
+    public float moveSpeed = 3f; // 적의 이동 속도
 
-    [Header("---------- 공격 속도 ----------")]
-    public float attackCooldown = 1f;   
-    private float lastAttackTime;
+    [Header("---------- 공격 쿨타임 ----------")]
+    public float attackCooldown = 1f; // 공격 간격
+    private float lastAttackTime;     // 마지막 공격 시간 기록용
 
-
+    // 내부 컴포넌트 참조
     private Rigidbody2D rb;
-    private SpriteRenderer sr;   // ← SpriteRenderer 추가
-    private Animator animator;   // ← Animator 추가
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
+    // 플레이어의 상태 머신 (공격 애니메이션을 실행하기 위해 필요)
+    private PlayerStateMachine PSM;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); // 적 본체에 Rigidbody2D가 있어야 작동
-        sr = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();  // Animator 가져오기
+        // 적 본체에 필요한 컴포넌트들을 가져옴
+        rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+
+        // 플레이어가 연결되어 있다면 상태 머신을 자식 포함해서 검색
+        if (player != null)
+        {
+            PSM = player.GetComponent<PlayerStateMachine>();
+            if (PSM == null)
+            {
+                // 자식 오브젝트에 붙어 있을 경우도 고려
+                PSM = player.GetComponentInChildren<PlayerStateMachine>();
+            }
+        }
+
+        // 디버깅용 로그: PSM이 null이면 경고 출력
+        if (PSM == null)
+        {
+            Debug.LogWarning("PlayerStateMachine 컴포넌트를 플레이어에서 찾을 수 없습니다. 공격 애니메이션이 실행되지 않을 수 있습니다.");
+        }
     }
 
     void Update()
     {
-        if (!player) return; // 플레이어 없으면 실행 안 함
+        // 플레이어가 없으면 아무 것도 하지 않음
+        if (!player) return;
 
+        // 플레이어와의 거리 계산
         float dist = Vector2.Distance(transform.position, player.position);
 
-        if (dist <= attackRange)
+        if (dist <= detectRange)
         {
-            // 공격 범위 안이면 공격
-            Attack();
-        }
-        else if (dist <= detectRange)
-        {
-            // 탐지 범위 안이면 플레이어 쫓아감
+            // 탐지 범위 안에 있으면 이동 및 공격
             MoveTowardsPlayer();
-        }
-        else
-        {
-            // 탐지 범위 밖이면 대기
-            Idle();
+
+            // 공격 쿨타임 체크
+            if (Time.time - lastAttackTime >= attackCooldown)
+            {
+                Attack();
+                lastAttackTime = Time.time;
+            }
         }
     }
 
@@ -59,40 +76,30 @@ public class EnemyAiBase : MonoBehaviour
     /// </summary>
     void MoveTowardsPlayer()
     {
+        // 방향 벡터 계산 및 이동
         Vector2 dir = (player.position - transform.position).normalized;
         rb.velocity = dir * moveSpeed;
 
-        // 플레이어 위치 기준으로 flipX 설정
-        if (player.position.x < transform.position.x)
-        {
-            spriteRenderer.flipX = true; // 플레이어가 왼쪽에 있으면 뒤집기
-        }
-        else
-        {
-            spriteRenderer.flipX = false; // 플레이어가 오른쪽에 있으면 원래대로
-        }
+        // 플레이어 위치 기준으로 sprite 방향 전환
+        spriteRenderer.flipX = player.position.x < transform.position.x;
     }
 
     /// <summary>
-    /// 공격 로직 (근접/원거리)
+    /// 공격 로직
     /// </summary>
     void Attack()
     {
         // 공격 시 멈춤
         rb.velocity = Vector2.zero;
 
-        // 애니메이션 실행
-        if (animator != null)
+        // 플레이어의 상태 머신이 존재하면 공격 애니메이션 실행
+        if (PSM != null)
         {
-            animator.SetTrigger("Attack");  // Animator 파라미터 "Attack" 실행
+            PSM.SetState(PlayerState.Attack);
         }
-    }
-
-    /// <summary>
-    /// 대기 상태 (정지)
-    /// </summary>
-    void Idle()
-    {
-        rb.velocity = Vector2.zero;
+        else
+        {
+            Debug.LogWarning("공격 시도 중 PSM이 null입니다. 애니메이션 실행 실패.");
+        }
     }
 }
